@@ -1,0 +1,324 @@
+<!-- ForgeBuddy html version 04-14-01 -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Foraging Helper + Monte Carlo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="panel">
+
+      <div class="masthead">
+        <img id="titleBlockImg" src="TitleBlock.png?v=3" alt="ForageBuddy">
+      </div>
+
+
+      <!-- Members Section Card -->
+      <div class="sectionCard g1">
+        <div class="sectionInner">
+          <div class="titleRow">
+            <button id="editMembersBtn" class="iconBtn" title="Edit members" aria-label="Edit members">✎</button>
+            <h2>Who's Going?</h2>
+          </div>
+
+          <table class="members" id="membersTable">
+            <thead>
+              <tr>
+                <th class="chk"></th>
+                <th></th>
+                <th class="con">CON</th>
+                <th class="snare">Snare</th>
+              </tr>
+            </thead>
+            <tbody><!-- Filled by JS --></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Members Editor Modal -->
+      <div id="memberEditor" class="modal" aria-hidden="true">
+        <div class="modalCard" role="dialog" aria-modal="true" aria-label="Edit members">
+          <div class="modalHeader">
+            <div class="modalTitle">Edit Members (max 15)</div>
+            <button id="closeEditorBtn" class="iconBtn" title="Close" aria-label="Close">✕</button>
+          </div>
+
+          <div class="modalBody">
+            <table class="editTable">
+              <thead>
+                <tr>
+                  <th style="width:52%;">Name</th>
+                  <th style="width:16%; text-align:center;">CON</th>
+                  <th style="width:20%; text-align:center;">Default</th>
+                  <th style="width:12%; text-align:center;">Del</th>
+                </tr>
+              </thead>
+              <tbody id="editTbody"></tbody>
+            </table>
+
+            <!-- <div class="modalHint">
+              Tip: leave Name blank to remove a row. CON will be clamped to 1–25.
+            </div> -->
+          </div> 
+
+          <div class="modalFooter">
+            <button id="cancelEditorBtn" class="btn">Cancel</button>
+            <button id="applyEditorBtn" class="btn">Apply & Return</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Net Result: POSITIVE Modal -->
+      <div id="netModalPos" class="modal" aria-hidden="true">
+        <div class="bugmanModalCard" role="dialog" aria-modal="true" aria-label="Net result details (positive)">
+          <!-- <div class="modalHeader"> -->
+            <div>Available now - </div>
+            <div class="modalTitle2">Oracle Premium Services</div>
+            <button class="iconBtn netModalClose" type="button" aria-label="Close">✕</button>
+          <!-- </div> -->
+      
+          <div class="bugmanModalBody">
+            <div class="netScreed">
+              Sitting pretty with extra rations?  Why let them spoil when you can invest in what one Viking daily referred to as
+              <span class="italicText">"the top foraging consultation service in the greater island area."</span> That's right, <span class="boldText greenText">Forage Buddy</span> and
+              <span class="boldText purpleText">Oracle Consulation</span> and 
+               are now available on a premium tier, offering unlimited consults.  Tired of catty responses from the Oracle? - Not any more!
+               With the Forage Buddy Premium, you'll be the envy of your clan.  Act now and receive a new app color just to show off
+                your great taste!
+            </div>
+            <div class="netScreed">For the low rate of just <span class="redText">1.5 rations per day</span> you can be living the good life.  Don't be the only Knud in your Karvi without it!</div>
+          </div>
+      
+          <div class="modalFooter netModalFooter2">
+            <button id="netAcceptBtn" class="btn" type="button">Go Premium!</button>
+            <button class="btn netModalClose" type="button">Close</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Net Result: NEGATIVE Modal -->
+      <div id="netModalNeg" class="modal" aria-hidden="true">
+        <div class="bugmanModalCard" role="dialog" aria-modal="true" aria-label="Net result details (negative)">
+          <div class="modalHeader">
+            <div class="modalTitle2">Bugman Pawn & Loan</div>
+            <button class="iconBtn netModalClose" type="button" aria-label="Close">✕</button>
+          </div>
+      
+          <div class="bugmanModalBody">
+            <div class="netScreed">
+              <!-- placeholder text for now -->
+              Is foraging no longer cutting it?  Maybe you've seena few week willed crewmembers straight up starve to death and have decided there
+              has got to be a better way.  And there is!
+            </div>
+            <div class="netScreed">Bugman Pawn & Loan has been a trusted fixture of the Nordic island community since 754BC.  With shops in nearly every port, our staff of 
+              technical specialists will find a solution <span class="boldText">for you!</span>  Our services include:
+            </div>
+            <ul class="simpleList">
+              <li>Premium foresight</li>
+              <li>Runic condensation</li>
+              <li>No refunds</li>
+            </ul>
+            <div class="netScreed">At Bugman Pawn & Loan, we believe no one should have to die just because they suck balls at foraging (or have a half dozen 1HP 'friends' to support.
+                There are always sponsors will to milk the raw energy your body produces in exchange for gruel.</div>
+          </div>
+      
+          <div class="modalFooter">
+            <button class="btn netModalClose" type="button">Close</button>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Task Difficulty + Day (combined card)
+      <div class="sectionCard g2">
+        <div class="sectionInner2">
+
+          <div class="sectionTitle">Difficulty</div>
+
+          <div class="settingsRow settingsRow3" aria-label="Task Difficulty">
+            <label class="settingsTile" aria-label="Easy difficulty">
+              <input type="radio" name="difficulty" value="easy">
+              <img src="Easy.png" alt="Easy">
+            </label>
+
+            <label class="settingsTile" aria-label="Medium difficulty">
+              <input type="radio" name="difficulty" value="medium" checked>
+              <img src="Medium.png" alt="Medium">
+            </label>
+
+            <label class="settingsTile" aria-label="Hard difficulty">
+              <input type="radio" name="difficulty" value="hard">
+              <img src="Hard.png" alt="Hard">
+            </label>
+          </div>
+
+          <div class="sectionTitle">Day</div>
+          
+          <div class="settingsRow settingsRow2" aria-label="Time Spent">
+            <label class="settingsTile" aria-label="Half Day">
+              <input type="radio" name="day" value="half">
+              <img src="Half.png" alt="Half">
+            </label>
+
+            <label class="settingsTile" aria-label="Full Day">
+              <input type="radio" name="day" value="full" checked>
+              <img src="Full.png" alt="Full">
+            </label>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- Task Difficulty + Day (combined card) -->
+      <div class="sectionCard g2">
+        <div class="sectionInner2">
+          <h2>Settings</h2>
+      
+          <div class="settingsRow settingsRow3" aria-label="Task Difficulty">
+            <label class="settingsTile" aria-label="Easy difficulty">
+              <input type="radio" name="difficulty" value="easy">
+              <img src="Easy.png" alt="Easy">
+            </label>
+      
+            <label class="settingsTile" aria-label="Medium difficulty">
+              <input type="radio" name="difficulty" value="medium" checked>
+              <img src="Medium.png" alt="Medium">
+            </label>
+      
+            <label class="settingsTile" aria-label="Hard difficulty">
+              <input type="radio" name="difficulty" value="hard">
+              <img src="Hard.png" alt="Hard">
+            </label>
+          </div>
+      
+          <div class="settingsRow settingsRow3" aria-label="Time Spent">
+            <label class="settingsTile" aria-label="Half Day">
+              <input type="radio" name="day" value="half">
+              <img src="Half.png" alt="Half">
+            </label>
+
+            <div class="settingsMidTitle">Day</div>
+      
+            <label class="settingsTile" aria-label="Full Day">
+              <input type="radio" name="day" value="full" checked>
+              <img src="Full.png" alt="Full">
+            </label>
+          </div>
+
+          <div class="calloutRow" title='If checked: "-1 item" becomes "-1 ration" (clamped at 0) for that forager.'>
+            <label for="itemAsRation">Optional: Set lost item as equal to -1 ration</label>
+            <input id="itemAsRation" type="checkbox">
+          </div>
+        </div>
+      </div>
+
+      <!-- set lost items equal to -1 ration for calculation purposes
+      <div class="sectionCard g3">
+        <div class="sectionInner">
+            <div class="calloutRow" title='If checked: "-1 item" becomes "-1 ration" (clamped at 0) for that forager.'>
+              <label for="itemAsRation">Optional: Set lost item as equal to -1 ration</label>
+              <input id="itemAsRation" type="checkbox">
+            </div>
+        </div>
+      </div> -->
+
+      
+    <!-- Monte Carlo (single button) -->
+    <!-- Oracle button (no card, forage-style) -->
+    <div class="forageSpacer">
+      <button id="mcBtn" class="imgBtnOracle" type="button">
+        <span class="btnLabel">Consult the Oracle</span>
+        <span class="btnOracle" aria-live="polite">ᚠᚢᚦᚨ ᚱᚢᚾᛖᛊ</span>
+      </button>
+    </div>
+
+    <!-- Oracle config (non-visual) -->
+    <input id="mcRuns" type="number" min="100" step="100" value="20000" hidden>
+
+
+      <!-- Forage button (no card, but spaced) -->
+      <div class="forageSpacer">
+        <button id="forageBtn" class="imgBtn">
+          <span class="imgBtnText">Just Fuckin Forage!</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- OUTPUT Panel -->
+    <div class="panel">
+
+      <!-- Forage results table (card) -->
+      <div class="sectionCard g2">
+        <div class="sectionInner">
+
+          <div id="outputPanel"></div>
+
+          <table class="out">
+            <colgroup>
+              <col style="width:22px">
+              <col style="width:auto">
+              <col style="width:80px">
+              <col style="width:80px">
+            </colgroup>
+
+            <thead>
+              <tr>
+                <th style="width:26px;"></th>
+                <th></th>
+                <th>Rations</th>
+                <th>Cost</th>
+              </tr>
+            </thead>
+            <tbody id="outputBody"><!-- Filled by JS --></tbody>
+          </table>
+
+        </div>
+      </div>
+
+      <!-- Totals (card) -->
+      <div class="sectionCard goldFrame">
+        <div class="sectionInner totalsCenter">
+          <div class="totals">
+            <div class="lab">Rations Collected:</div>
+            <div class="val" id="grossVal">0</div>
+            <div class="lab">Net for the day:</div>
+            <div class="val" id="netVal">0</div>
+            <button id="netInfoBtn" class="netInfoBtn" type="button" aria-label="Explain net result">*</button>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Monte Carlo chart + stats (card) -->
+      <div class="sectionCard g4">
+        <div class="sectionInner2">
+
+          <div class="mcTitle">Monte Carlo Foraging Results</div>
+          <canvas id="hist" width="800" height="320" aria-label="Net histogram"></canvas>
+
+          <div class="stats" id="mcStats">
+            <div><span class="k">Predicted chance to break-even</span><span class="v" id="sBE">—</span></div>
+            <div><span class="k">Avg Gross / Net</span><span class="v" id="sGN">—</span></div>
+            <!-- <div><span class="k">Avg HP / Items lost</span><span class="v" id="sIH">—</span></div> -->
+            <div>
+              <span class="v">
+                <!-- <span id="sMood">—</span> -->
+                <span id="sDayMood"> </span>
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="masthead endblock">
+        <img id="endBlockImg" src="EndBlock.png" alt="ForageBuddy">
+      </div>
+    </div>
+  </div>
+  <audio id="cashSound" src="CashRegister.mp3" preload="auto"></audio>
+<script src="app.js" defer></script>
+</body>
+</html>

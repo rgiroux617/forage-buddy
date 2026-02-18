@@ -1,0 +1,1219 @@
+/* foragebuddy styles v4-15-02 */
+
+/* ============================================================
+   HOW THIS FILE IS ORGANIZED (read me once)
+   ------------------------------------------------------------
+   1) Design tokens + fonts  -> global “constants” (colors, fonts)
+   2) Base elements          -> element-level defaults (body, h2, inputs, canvas)
+   2b) Buttons system        -> button primitives + standard .btn
+   3) Layout                 -> the two-panel layout + masthead + spacing wrappers
+   4) Components             -> the actual UI widgets/cards/tables
+   5) Utilities              -> small reusable helpers (ok/bad, outName/outRolls, etc.)
+   6) State (JS-driven)      -> classes toggled by JS (oracle animation states)
+   7) Responsive             -> mobile overrides
+   ============================================================ */
+
+
+/* ============================================================
+   1) Design tokens + fonts
+   ------------------------------------------------------------
+   Tokens are “variables” you can use throughout the CSS.
+   If you want to re-theme later, this is where you start.
+   ============================================================ */
+:root {
+  --ink: #0b2239;
+  /* main text color */
+  --bg: #ffffff;
+  /* default light surface */
+  --muted: #6b7280;
+  /* muted labels */
+  --line: #0b2239;
+  /* dark lines / borders */
+  --pageBg: #2a7a38;
+  /* big page background behind panels */
+}
+
+/* Custom decorative font used ONLY on the Oracle button text layers */
+@font-face {
+  font-family: 'CinzelDecorative';
+  src: url('CinzelDecorative-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+/* ============================================================
+   2) Base elements
+   ------------------------------------------------------------
+   These are “global defaults” for bare HTML elements.
+   Keep these light so components can control their own look.
+   ============================================================ */
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--pageBg);
+  margin: 24px;
+  color: var(--ink);
+}
+
+h2 {
+  margin: 0 0 14px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* Default sizing for checkboxes and radios across the app */
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  accent-color: rgb(218, 165, 32);
+}
+
+input[type="radio"] {
+  width: 20px;
+  height: 20px;
+}
+
+/* Histogram canvas (Monte Carlo card) */
+canvas {
+  width: 100%;
+  height: 220px;
+  border: 1px solid rgba(11, 34, 57, 0.25);
+  border-radius: 12px;
+  background: #ffffff;
+  display: block;
+}
+
+
+/* ============================================================
+   2b) Buttons system (primitives)
+   ------------------------------------------------------------
+   IMPORTANT IDEA:
+   - button{} is minimal (applies to all buttons)
+   - .btn is the “standard grey button” used where you opt-in
+   - Other button types (icon, image buttons) have their own classes
+   HTML references:
+     - Standard: <button class="btn">Cancel</button>
+     - Icon:     <button class="iconBtn">✎</button>
+     - Image:    <button id="forageBtn" class="imgBtn">...</button>
+                 <button id="mcBtn" class="imgBtnOracle">...</button>
+   ============================================================ */
+
+/* Base: applies to ALL <button> elements */
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Standard “grey button” (use class="btn") */
+.btn {
+  display: block;
+  margin: 12px auto 0;
+  font-size: 18px;
+  padding: 12px 24px;
+
+  border: 2px solid #c7c7c7;
+  background: #efefef;
+
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+}
+
+.btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+
+/* ============================================================
+   3) Layout (page structure)
+   ------------------------------------------------------------
+   These rules define overall geometry:
+   - .wrap = holds the two main columns (input panel + output panel)
+   - .panel = fixed desktop width (420px), fluid on mobile
+   ============================================================ */
+.wrap {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+/* A “panel” is one column of cards (left: input, right: output) */
+.panel {
+  width: 420px;
+  border: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background: transparent;
+}
+
+/* Masthead banner image at top (and endblock at bottom) */
+.masthead {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 0 14px 0;
+}
+
+.masthead img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Spacer used to separate the big image buttons from cards */
+.forageSpacer {
+  margin: 10px 0 6px;
+  display: flex;
+  justify-content: center;
+}
+
+/* When forage button is inside forageSpacer, don’t add extra top margin */
+.forageSpacer #forageBtn {
+  margin-top: 0;
+}
+
+/* for the bugman offers */
+.netScreed {
+  font-size: 18px;
+  line-height: 1.35;
+  text-align: center;
+  padding: 8px 6px;
+}
+
+/* Positive net modal: two-button footer layout */
+.netModalFooter2 {
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* ============================================================
+   4) Components (actual UI widgets)
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   MEMBERS TABLE (main page)
+   HTML:
+     <table class="members" id="membersTable">...</table>
+   Notes:
+   - .snare column is used for checkboxes
+   - .con column is used for CON
+   ------------------------------------------------------------ */
+.members {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0 18px;
+}
+
+.members th {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 700;
+  padding: 0 6px 6px;
+}
+
+.members td {
+  padding: 3px 6px;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+/* Name column expands to fill remaining width */
+.members td.name {
+  width: 100%;
+}
+
+.members td.con,
+.members th.con {
+  text-align: center;
+  width: 64px;
+}
+
+.members td.snare,
+.members th.snare {
+  text-align: center;
+  width: 34px;
+}
+
+/* Alternating bands for members table (JS adds .band) */
+.members tr.band {
+  background: rgba(11, 34, 57, 0.05);
+}
+
+/* Emphasize main party members */
+.members tr.mainChar td.name {
+  font-weight: 600;
+}
+
+/* Divider between main party and others */
+.members tr.mainDivider {
+  border-bottom: 3px solid rgba(11, 34, 57, 0.35);
+}
+
+/* ------------------------------------------------------------
+   SECTION CARDS (frame + inner surface)
+   HTML pattern:
+     <div class="sectionCard g2">
+       <div class="sectionInner"> ... </div>
+     </div>
+   Notes:
+   - .sectionCard is the colored “frame”
+   - .sectionInner is the white “content surface”
+   - g1..g4 are the green “ladder” frame colors
+   ------------------------------------------------------------ */
+.sectionTitle {
+  text-align: center;
+  margin: 18px 0 8px;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+/* Special tightening for the Difficulty/Day card */
+.sectionCard.g2 .sectionTitle {
+  margin: 0px 0 8px;
+}
+
+/* Legacy note: .options exists, but you’re now using image radio tiles.
+   If you fully retire the old radio layout, you can remove .options/.opt. */
+.sectionCard.g2 .options {
+  margin: 4px 0 8px;
+}
+
+.sectionCard {
+  border-radius: 18px;
+  padding: 12px;
+  /* “frame thickness” */
+  margin: 12px 0 14px;
+}
+
+.sectionInner {
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px 12px 10px;
+}
+
+.sectionInner2 {
+  background: #f1f1f1;
+  border-radius: 14px;
+  padding: 12px 12px 10px;
+}
+.settingsMidTitle {
+  display: flex;
+  align-items: center;
+  /* vertical centering */
+  justify-content: center;
+  /* horizontal centering */
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Green ladder (frame colors) */
+.g1 {
+  background: #d7f2df;
+}
+
+.g2 {
+  background: #c6ecd3;
+}
+
+.g3 {
+  background: #b2e2c5;
+}
+
+.g4 {
+  background: #9bd7b6;
+}
+
+/* When members table is inside a card, tighten its spacing */
+.sectionInner .members {
+  margin: 8px 0 0;
+}
+
+/* Gold frame used to match the “highlight” color family */
+.goldFrame {
+  background: rgba(218, 165, 32);
+}
+
+/* Totals card: center the totals grid in this one spot */
+.totalsCenter {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+/* Totals: match the Output table's column boundaries exactly */
+.totalsCenter .totals {
+  margin-top: 0;
+  display: grid;
+
+  /* match .out colgroup */
+  grid-template-columns: 22px 1fr 80px 80px;
+
+  row-gap: 6px;
+  column-gap: 0;
+  /* IMPORTANT: tables don't have column gaps */
+  padding: 0;
+  /* we'll pad the "cells" instead */
+}
+
+/* Make these behave like table cells: padding inside, not gaps between columns */
+.totalsCenter .totals .lab {
+  grid-column: 1 / 3;
+  justify-self: end;
+  text-align: right;
+  white-space: nowrap;
+  padding: 0 6px;
+  /* match table cell padding vibe */
+}
+
+.totalsCenter .totals .val {
+  grid-column: 3;
+  justify-self: stretch;
+  width: 100%;
+  text-align: center;
+  /* match your Rations column look */
+  padding: 0 6px;
+  /* match table cell padding */
+}
+
+/* Asterisk button lives in the 4th column of the totals grid */
+.netInfoBtn {
+  grid-column: 4;
+  justify-self: center;
+  align-self: center;
+
+  border: 0;
+  background: transparent;
+  padding: 0;
+
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.netInfoBtn:active {
+  transform: translateY(1px);
+}
+
+.val {font-weight: 800;}
+
+/* ------------------------------------------------------------
+   GRAPHIC RADIO TILES (difficulty/day)
+   HTML:
+     <div class="settingsRow settingsRow3">
+       <label class="settingsTile">
+         <input type="radio" ...>
+         <img ...>
+       </label>
+     </div>
+   How it works:
+   - the radio is hidden but still functional
+   - the img gets a glow when the radio is checked
+   ------------------------------------------------------------ */
+.settingsRow {
+  display: grid;
+  gap: 12px;
+  margin: 6px 0 10px;
+}
+
+.settingsRow2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.settingsRow3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.settingsTile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 16px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.settingsTile img {
+  width: 100%;
+  max-width: 80px;
+  /* matches your source size */
+  height: auto;
+  display: block;
+  border-radius: 14px;
+}
+
+/* Hide the radios but keep them functional/accessibility-friendly */
+.settingsTile input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Selected glow */
+.settingsTile input[type="radio"]:checked+img {
+  box-shadow:
+    0 0 0 5px rgba(218, 165, 32, 1.0),
+    /* gold ring */
+    0 0 38px rgba(218, 165, 32, 0.0);
+  /* soft glow */
+}
+
+/* Keyboard focus ring */
+.settingsTile input[type="radio"]:focus-visible+img {
+  box-shadow:
+    0 0 0 4px rgba(37, 99, 235, 0.65),
+    0 0 18px rgba(37, 99, 235, 0.35);
+}
+
+
+/* ------------------------------------------------------------
+   OUTPUT TABLE (forage results)
+   HTML:
+     <table class="out"> ... <tbody id="outputBody">...</tbody>
+   Notes:
+   - JS adds .band to alternating rows for light striping
+   ------------------------------------------------------------ */
+.out {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+  table-layout: fixed;
+}
+
+.out th {
+  font-size: 18px;
+  color: var(--muted);
+  text-align: left;
+  padding: 0 6px 6px;
+}
+
+.out td {
+  padding: 3px 6px;
+  font-size: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.out td.res {
+  width: 28px;
+  text-align: center;
+}
+
+.out td.rat {
+  width: 26px;
+  text-align: center;
+  padding-right: 6px;
+}
+
+.out td.cost {
+  width: 26px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* The “name + rolls” cell */
+.out td:nth-child(2) {
+  width: auto;
+  max-width: 100%;
+}
+
+/* Alternating day-forage bands (JS adds .band to every other row) */
+.out tr.band {
+  background: rgba(11, 34, 57, 0.05);
+  /* very light ink tint */
+}
+
+
+/* ------------------------------------------------------------
+   TOTALS GRID (gross + net)
+   HTML:
+     <div class="totals">
+       <div class="lab">...</div><div class="val">...</div>
+     </div>
+   ------------------------------------------------------------ */
+.totals {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr 80px;
+  row-gap: 6px;
+  column-gap: 12px;
+  justify-items: end;
+}
+
+.totals .lab {
+  justify-self: end;
+  font-size: 20px;
+}
+
+.totals .val {
+  justify-self: start;
+  font-size: 20px;
+  width: 70px;
+  text-align: left;
+}
+
+
+/* ------------------------------------------------------------
+   FORAGE IMAGE BUTTON
+   HTML:
+     <button id="forageBtn" class="imgBtn">
+       <span class="imgBtnText">...</span>
+     </button>
+   Notes:
+   - button is visually a PNG background
+   - inner text is screen-reader-only (hidden visually)
+   ------------------------------------------------------------ */
+#forageBtn.imgBtn {
+  min-width: 95%;
+  height: 64px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  background-image: url("ForageButton.png?v=2");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+}
+
+/* Keep text for screen readers; hide visually */
+#forageBtn.imgBtn .imgBtnText {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Press effect (optional) */
+#forageBtn.imgBtn:active {
+  transform: translateY(1px);
+}
+
+/* NOTE: This block targets #forageBtn regardless of class.
+   It’s styling “forage text” (even though your visible text is hidden).
+   If you ever make visible overlay text, these values will matter again. */
+#forageBtn {
+  color: #b00020;
+  font-weight: 1000;
+  font-size: 32px;
+}
+
+
+/* ------------------------------------------------------------
+   ORACLE CONFIG INPUT (non-visual)
+   HTML:
+     <input id="mcRuns" ... hidden>
+   ------------------------------------------------------------ */
+#mcRuns {
+  display: none;
+}
+
+
+/* ------------------------------------------------------------
+   MONTE CARLO CARD: wrappers + stats row
+   HTML:
+     <div class="mcTitle">...</div>
+     <div class="stats" id="mcStats">...</div>
+   Notes:
+   - .mcBox exists as a semantic wrapper (currently no visuals)
+   ------------------------------------------------------------ */
+.mcBox {
+  margin-top: 0;
+  border-top: 0;
+  padding-top: 0;
+}
+
+.mcTitle {
+  text-align: center;
+  font-weight: 800;
+  margin: 0 0 10px;
+}
+
+.stats {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px 12px;
+  font-size: 16px;
+}
+
+.stats div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.stats .k {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.stats .v {
+  font-variant-numeric: tabular-nums;
+}
+
+.stats .moodRow {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+/* Final phrase at end of MC table (the single-day mood line) */
+#sDayMood {
+  margin-left: 10px;
+  color: rgb(218, 165, 32);
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Center the single-day mood row */
+.stats div:has(#sDayMood) {
+  justify-content: center;
+}
+
+/* ------------------------------------------------------------
+   TITLE ROW + ICON BUTTON (edit pencil)
+   HTML:
+     <div class="titleRow">
+       <button class="iconBtn">✎</button>
+       <h2>Who's Going?</h2>
+     </div>
+   Notes:
+   - .titleRow centers the h2
+   - .iconBtn is absolutely positioned at left
+   ------------------------------------------------------------ */
+.titleRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.titleRow h2 {
+  margin: 0;
+}
+
+.iconBtn {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: unset;
+  width: 34px;
+  height: 34px;
+  margin: 0;
+  border: 2px solid #c7c7c7;
+  background: #efefef;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.iconBtn:active {
+  transform: translateY(calc(-50% + 1px));
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+
+/* ------------------------------------------------------------
+   EDIT TABLE (inside the modal)
+   ------------------------------------------------------------
+   KEY DISTINCTION:
+   - The MODAL classes below style the *pop-out overlay + dialog*.
+   - .editTable styles ONLY the table INSIDE that dialog.
+
+   HTML:
+     <div id="memberEditor" class="modal">
+       <div class="modalCard">
+         ...
+         <table class="editTable">...</table>
+         ...
+       </div>
+     </div>
+   ------------------------------------------------------------ */
+.editTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.editTable th {
+  text-align: left;
+  color: var(--muted);
+  font-size: 14px;
+  padding: 0 6px 6px;
+}
+
+.editTable td {
+  padding: 6px;
+  border-top: 1px solid rgba(11, 34, 57, 0.12);
+}
+
+/* Inputs inside the modal edit table */
+.editTable input[type="text"] {
+  width: 100%;
+  font-size: 16px;
+  padding: 8px 10px;
+  border: 1px solid #c7c7c7;
+  border-radius: 10px;
+}
+
+.editTable input[type="number"] {
+  width: 76px;
+  font-size: 16px;
+  padding: 8px 10px;
+  border: 1px solid #c7c7c7;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.editTable .center {
+  text-align: center;
+}
+
+
+/* ------------------------------------------------------------
+   MODAL (Members Editor pop-out)
+   HTML:
+     <div id="memberEditor" class="modal">...</div>
+   How it works:
+   - default: display:none (hidden)
+   - JS adds .open -> display:flex (visible)
+   - overlay dims the screen, modalCard is the dialog itself
+   ------------------------------------------------------------ */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  z-index: 9999;
+}
+
+.modal.open {
+  display: flex;
+}
+
+/* The white dialog box */
+.modalCard {
+  width: min(860px, 96vw);
+  max-height: 90vh;
+  overflow: auto;
+  background: #ffffff;
+  border: 3px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  padding: 16px 16px 12px;
+}
+
+.bugmanModalCard {
+  width: min(860px, 96vw);
+  max-height: 90vh;
+  overflow: auto;
+  background: #fbf2d8c3;
+  border: 3px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  padding: 16px 16px 12px;
+}
+
+
+/* Header row inside the dialog: title + close button */
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.modalTitle {
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.modalTitle2 {
+  font-size: 26px;
+  font-weight: 600;
+  color: #b00020;
+  text-align: center;
+}
+
+/* Main scrollable content area */
+.modalBody {
+  padding: 8px 0 10px;
+}
+
+.bugmanModalBody {
+  padding: 0px 0 10px;
+}
+
+/* Footer row: action buttons (Cancel / Apply) */
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 2px solid rgba(11, 34, 57, 0.12);
+}
+
+/* Standard buttons inside modal footer are slightly smaller */
+.modalFooter .btn {
+  min-width: auto;
+  margin: 0;
+  padding: 10px 16px;
+  font-size: 16px;
+}
+
+.modalHint {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: left;
+}
+
+/* text effects for bugman modal offers */
+.boldText {
+  font-weight: 700
+}
+
+.italicText {
+  font-style: italic;
+}
+
+.purpleText {
+  color:rgb(174, 18, 172)
+}
+
+.greenText {
+  color: rgb(7, 184, 16)
+}
+
+.redText {
+  color: rgb(160, 15, 15)
+}
+/* ============================================================
+   5) Utilities (small helpers used in multiple places)
+   ============================================================ */
+
+/* Output table: name line */
+.outName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.95em;
+  font-weight: 600;
+}
+
+/* Output table: roll line (smaller, grey) */
+.outRolls {
+  color: #777;
+  font-size: 0.75em;
+  line-height: 1.1;
+}
+
+/* Result checkmarks and x's in output table */
+.ok {
+  color: #1f8f3a;
+  font-weight: 800;
+  font-size: 1.2em;
+}
+
+.bad {
+  color: #b00020;
+  font-weight: 800;
+  font-size: 1.2em;
+}
+
+/* Generic “two items in a row” layout helper.
+   NOTE: This appears only once in this file currently. */
+.row2 {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Formatting for "items-as-rations" row */
+/* Callout row: label + checkbox  */
+.calloutRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.calloutRow label {
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+}
+
+/* ============================================================
+   6) State (interactive/JS-driven)
+   ------------------------------------------------------------
+   These rules exist because JS changes classes/attributes at runtime.
+   Main example: Oracle button animation.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   ORACLE IMAGE BUTTON (base)
+   HTML:
+     <button id="mcBtn" class="imgBtnOracle">
+       <span class="btnLabel">...</span>
+       <span class="btnOracle">...</span>
+     </button>
+   ------------------------------------------------------------ */
+#mcBtn.imgBtnOracle {
+  min-width: 95%;
+  height: 64px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  background-image: url("OracleButton.png?v=1");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+}
+
+/* (Screen-reader text pattern) — currently not used in mcBtn HTML,
+   but kept here as a consistent pattern with forage button. */
+#mcBtn.imgBtnOracle .imgBtnText {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+#mcBtn.imgBtnOracle:active {
+  transform: translateY(1px);
+}
+
+/* Make the button a positioning container for overlay text layers */
+#mcBtn {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Both text layers share the same layout (centered overlay) */
+#mcBtn .btnLabel,
+#mcBtn .btnOracle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  /* This is your “narrower than button” text box */
+  width: 75%;
+  max-width: 75%;
+
+  font-family: 'CinzelDecorative', serif;
+  font-size: var(--oracleFont, 24px);
+  /* optional but recommended so “fit” has a real box to fit into */
+    max-height: 80%;
+    overflow: hidden;
+    
+  letter-spacing: 1px;
+  text-align: center;
+  font-weight: 700;
+
+  color: #ffffff;
+  white-space: normal;
+  line-height: 1.2;
+
+  /* Fade/blur/scale transitions for casting/reveal states */
+  transition:
+    opacity 2.0s ease-in-out,
+    filter 2.0s ease-in-out,
+    transform 2.0s ease-in-out;
+}
+
+/* Oracle layer starts invisible; becomes visible via state classes */
+#mcBtn .btnOracle {
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  opacity: 0;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.45);
+}
+
+/* STATE 1: casting
+   - label dissolves away
+   - oracle layer appears blurred/glowy */
+#mcBtn.casting .btnLabel {
+  opacity: 0;
+  filter: blur(6px);
+  transform: translate(-50%, -50%) scale(0.98);
+}
+
+#mcBtn.casting .btnOracle {
+  opacity: 1;
+  filter: blur(2px);
+  transform: translate(-50%, -50%) scale(1.02);
+  text-shadow:
+    0 0 6px rgba(255, 255, 255, 0.8),
+    0 0 16px rgba(255, 255, 255, 0.5);
+}
+
+/* STATE 2: reveal
+   - oracle text becomes crisp and stable */
+#mcBtn.reveal .btnOracle {
+  opacity: 1;
+  filter: blur(0px);
+  transform: translate(-50%, -50%) scale(1.00);
+}
+
+#mcBtn.reveal .btnLabel {
+  opacity: 0;
+  filter: blur(6px);
+}
+
+
+/* ============================================================
+   7) Responsive (phone)
+   ------------------------------------------------------------
+   Desktop uses 420px panels.
+   Phone collapses to a single column layout and bigger tap targets.
+   ============================================================ */
+@media (max-width: 520px) {
+  body {
+    margin: 12px;
+  }
+
+  .wrap {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .wrap>div {
+    width: 100%;
+  }
+
+  .panel {
+    width: 100%;
+  }
+
+  h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .members td {
+    font-size: 18px;
+  }
+
+  .out td {
+    font-size: 18px;
+  }
+
+  /* Standard buttons should be full width on mobile */
+  .btn {
+    min-width: 100%;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 18px;
+    height: 18px;
+  }
+
+  .settingsRow {
+    gap: 10px;
+  }
+
+  .settingsTile {
+    padding: 6px;
+    border-radius: 14px;
+  }
+
+  /* Phone pencil tweak: larger icon */
+  .iconBtn {
+    width: 34px;
+    height: 34px;
+    font-size: 34px;
+    border-radius: 12px;
+  }
+
+    /* Net modals: phone polish */
+    @media (max-width: 520px) {
+  
+      /* Give the overlay a bit more breathing room */
+      .modal {
+        padding: 12px;
+      }
+  
+      /* Make the dialog feel like a proper “sheet” */
+      .modalCard {
+        width: 96vw;
+        max-height: 86vh;
+        padding: 14px 14px 12px;
+        border-radius: 18px;
+      }
+  
+      .modalTitle {
+        font-size: 16px;
+      }
+
+      .modalTitle2 {
+        font-size: 22px;
+        color:#b00020
+      }
+  
+      /* Easier tap target for the X */
+      .modalHeader .iconBtn {
+        width: 40px;
+        height: 40px;
+        font-size: 28px;
+        border-radius: 12px;
+      }
+  
+      /* Screed readability */
+      .netScreed {
+        font-size: 17px;
+        line-height: 1.4;
+        padding: 10px 6px;
+      }
+  
+      /* Buttons: full width feels better on mobile */
+      .modalFooter {
+        justify-content: center;
+      }
+  
+      .modalFooter .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .netModalFooter2 .btn {
+        width: 48%;
+      }
+    }
+}
