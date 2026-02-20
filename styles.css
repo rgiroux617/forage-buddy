@@ -1,4 +1,4 @@
-/* foragebuddy styles v4-15-02 */
+/* foragebuddy styles v4-19-01 */
 
 /* ============================================================
    HOW THIS FILE IS ORGANIZED (read me once)
@@ -58,7 +58,7 @@ body {
 h2 {
   margin: 0 0 14px;
   text-align: center;
-  font-size: 22px;
+  font-size: 28px;
   font-weight: 700;
 }
 
@@ -612,6 +612,67 @@ button {
   font-size: 32px;
 }
 
+/* ------------------------------------------------------------
+   NET ACTION IMAGE BUTTONS (positive / negative)
+   HTML:
+     <button id="netPosBtn" class="imgBtnNet"></button>
+     <button id="netNegBtn" class="imgBtnNet"></button>
+   ------------------------------------------------------------ */
+.imgBtnNet {
+  min-width: 95%;
+  height: 64px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+}
+
+.imgBtnNet:active {
+  transform: translateY(1px);
+}
+
+/* Set each button's graphic here (rename files to match yours) */
+#netPosBtn.imgBtnOracle {
+  background-image: url("CashButton.png?v=1");
+}
+
+#netNegBtn.imgBtnOracle {
+  background-image: url("SnickersButton.png?v=1");
+}
+
+/* Net action buttons: same base behavior as Oracle button */
+#netPosBtn.imgBtnOracle,
+#netNegBtn.imgBtnOracle {
+  min-width: 95%;
+  height: 64px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+}
+
+/* Use your identically-sized PNGs as the button image */
+#netPosBtn.imgBtnOracle {
+  background-image: url("CashButton.png?v=1");
+}
+
+#netNegBtn.imgBtnOracle {
+  background-image: url("SnickersButton.png?v=1");
+}
+
+/* Hide the internal Oracle text layers for these net buttons */
+#netActionRow .btnLabel,
+#netActionRow .btnOracle {
+  display: none;
+}
 
 /* ------------------------------------------------------------
    ORACLE CONFIG INPUT (non-visual)
@@ -640,7 +701,7 @@ button {
 .mcTitle {
   text-align: center;
   font-weight: 800;
-  margin: 0 0 10px;
+  margin: 0 0 0px;
 }
 
 .stats {
@@ -831,7 +892,7 @@ button {
   width: min(860px, 96vw);
   max-height: 90vh;
   overflow: auto;
-  background: #fbf2d8c3;
+  background: #fbf2d8fa;
   border: 3px solid var(--line);
   border-radius: 16px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
@@ -966,7 +1027,7 @@ button {
 
 .calloutRow label {
   color: var(--muted);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   text-align: left;
 }
@@ -1122,7 +1183,7 @@ button {
   }
 
   h2 {
-    font-size: 18px;
+    font-size: 24px;
     margin-bottom: 10px;
   }
 

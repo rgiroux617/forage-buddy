@@ -1,4 +1,4 @@
-// ForageBuddy app.js — baseline v2026-02-15-01
+// ForageBuddy app.js — baseline v2026-02-19-01
 
 // ============================================================
 // State (party + defaults)
@@ -23,7 +23,7 @@ let defaultSelected = new Set(["Ingvar","Hackon the Maimed","Lambort","Rabiésma
 // Setting for Oracle "misuse" trigger (double pressing without changing states)
 let hasChanged = true;     // start true so first press is normal
 let repeatCount = 0;       // how many times pressed without changes
-
+let isPremium = false;
 
 // ============================================================
 // Dice + randomness
@@ -145,6 +145,15 @@ function fitOracleText(spanEl, { maxPx = 24, minPx = 12 } = {}) {
   }
 }
 
+function setMonteCarloVisible(show) {
+  // Your MC card is the one that contains the histogram canvas
+  const canvas = document.getElementById("hist");
+  const card = canvas?.closest(".sectionCard");
+  if (!card) return;
+
+  card.style.display = show ? "" : "none";
+}
+
 
 // ============================================================
 // Selection + input helpers
@@ -180,19 +189,33 @@ function getSelectedTeam() {
   return { team, selectedIdx };
 }
 
-function updateNetInfoAsterisk() {
+function updateNetActionButtons() {
   const net = Number(document.getElementById("netVal")?.textContent ?? NaN);
-  const btn = document.getElementById("netInfoBtn");
-  if (!btn) return;
 
-  // Default look before a forage run (or if net isn't valid yet)
+  const row = document.getElementById("netActionRow");
+  const posBtn = document.getElementById("netPosBtn");
+  const negBtn = document.getElementById("netNegBtn");
+  if (!row || !posBtn || !negBtn) return;
+
+  // Before a forage run (or invalid net): hide everything
   if (!Number.isFinite(net)) {
-    btn.style.color = "";
+    row.hidden = true;
+    posBtn.hidden = true;
+    negBtn.hidden = true;
     return;
   }
 
-  btn.style.color = (net >= 0) ? "#1f8f3a" : "#b00020";
+  // After a forage run: show row and only the correct button
+  row.hidden = false;
+  if (net >= 0) {
+    posBtn.hidden = false;
+    negBtn.hidden = true;
+  } else {
+    posBtn.hidden = true;
+    negBtn.hidden = false;
+  }
 }
+
 
 
 // ============================================================
@@ -322,6 +345,7 @@ function clearOutput() {
   document.getElementById("outputBody").innerHTML = "";
   document.getElementById("grossVal").textContent = "0";
   document.getElementById("netVal").textContent = "0";
+  updateNetActionButtons();
 }
 
 function addOutputRow({name, rollTag, result, rations, cost}) {
@@ -395,6 +419,8 @@ function runAndRenderMonteCarlo(team, opts = {}) {
   const highlightValue = Number.isFinite(opts.highlightValue) ? opts.highlightValue : null;
   const dayNet = Number.isFinite(opts.dayNet) ? opts.dayNet : null; // for sDayMood
   const animateOracle = !!opts.animateOracle;
+  const suppressDisplay = !!opts.suppressDisplay;
+
 
   const runs = Math.max(
     100,
@@ -418,12 +444,15 @@ function runAndRenderMonteCarlo(team, opts = {}) {
 
   const res = runMonteCarlo(team, runs, difficulty, half, totalPartySize, itemAsRation);
 
-  // Histogram (optional highlight)
-  if (highlightValue !== null) {
-    drawHistogramInt(res.net_vals, "hist", { highlightValue });
-  } else {
-    drawHistogramInt(res.net_vals, "hist");
-  }
+  // If we're suppressing display, don't draw/update the MC UI.
+  // (We still computed res so Oracle can use probabilities.)
+  if (!suppressDisplay) {
+    // Histogram (optional highlight)
+    if (highlightValue !== null) {
+      drawHistogramInt(res.net_vals, "hist", { highlightValue });
+    } else {
+      drawHistogramInt(res.net_vals, "hist");
+    }
 
   // Stats
   setStat("sBE", (res.p_break_even * 100).toFixed(1) + "%");
@@ -432,6 +461,7 @@ function runAndRenderMonteCarlo(team, opts = {}) {
     "sIH",
     `${(res.avg_item_costs == null ? "—" : fmt(res.avg_item_costs, 1))} / ${fmt(res.avg_hp_costs, 1)}`
   );
+  }
 
   // Mood (and optional oracle animation)
   const mood = moodFromBank(res.p_break_even, repeatCount);
@@ -611,6 +641,11 @@ function breakEvenCategory(pct) {
 }
 
 function moodFromBank(pct, repeatCount) {
+  if (isPremium) {
+    const base = breakEvenMood(pct);
+    return { text: "see the Monte Carlo, mouthbreather", color: base.color };
+  }
+
   const base = breakEvenMood(pct); // keep your existing color thresholds
 
   // 2nd click (no changes): fixed response
@@ -996,7 +1031,8 @@ function onForageClick() {
   document.getElementById("grossVal").textContent = String(gross);
   document.getElementById("netVal").textContent = String(net);
 
-  updateNetInfoAsterisk();
+  updateNetActionButtons();
+
 
 
   // Scroll so the pressed button sits at the top
@@ -1005,6 +1041,7 @@ function onForageClick() {
   window.scrollTo({ top: buttonTop, behavior: "smooth" });
 
   // Re-run MC and highlight today's net
+  setMonteCarloVisible(true);
   runAndRenderMonteCarlo(team, { highlightValue: net, dayNet: net, animateOracle: false });
 }
 
@@ -1015,6 +1052,10 @@ function onMcClick() {
   } else {
     repeatCount++;        // user pressed again without changes
   }
+  
+  // Hide MC card unless premium
+  setMonteCarloVisible(isPremium);
+
   const { team } = getSelectedTeam();
   runAndRenderMonteCarlo(team, { animateOracle: true });
 }
@@ -1052,6 +1093,11 @@ function onNetInfoClick() {
 }
 
 function onNetAcceptClick() {
+
+isPremium = true;
+
+setMonteCarloVisible(true);
+
   // Play cash sound
   const cash = document.getElementById("cashSound");
   if (cash) {
@@ -1068,10 +1114,18 @@ function onNetAcceptClick() {
   if (img2) img2.src = "EndBlockPremium.png";
 
   // Brighten the background (body uses var(--pageBg))
-  document.documentElement.style.setProperty("--pageBg", "#7fbf2f"); // yellow-green
+  document.documentElement.style.setProperty("--pageBg", "#5a4f0d"); // yellow-green
 
   // Close the positive modal
   closeModal(document.getElementById("netModalPos"));
+}
+
+function onNetPosBtnClick() {
+  openModal(document.getElementById("netModalPos"));
+}
+
+function onNetNegBtnClick() {
+  openModal(document.getElementById("netModalNeg"));
 }
 
 
@@ -1089,7 +1143,9 @@ function wireUI() {
   document.getElementById("cancelEditorBtn").addEventListener("click", onCancelEditorClick);
   document.getElementById("applyEditorBtn").addEventListener("click", onApplyEditorClick);
 
-  document.getElementById("netInfoBtn")?.addEventListener("click", onNetInfoClick);
+  document.getElementById("netPosBtn")?.addEventListener("click", onNetPosBtnClick);
+  document.getElementById("netNegBtn")?.addEventListener("click", onNetNegBtnClick);
+
 
 
   memberEditor.addEventListener("click", onEditorBackdropClick);

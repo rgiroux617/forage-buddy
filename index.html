@@ -105,27 +105,27 @@
       <!-- Net Result: NEGATIVE Modal -->
       <div id="netModalNeg" class="modal" aria-hidden="true">
         <div class="bugmanModalCard" role="dialog" aria-modal="true" aria-label="Net result details (negative)">
-          <div class="modalHeader">
+          <!-- <div class="modalHeader"> -->
             <div class="modalTitle2">Bugman Pawn & Loan</div>
             <button class="iconBtn netModalClose" type="button" aria-label="Close">✕</button>
-          </div>
+          <!-- </div> -->
       
           <div class="bugmanModalBody">
             <div class="netScreed">
               <!-- placeholder text for now -->
-              Is foraging no longer cutting it?  Maybe you've seena few week willed crewmembers straight up starve to death and have decided there
+              Is foraging no longer cutting it?  Maybe you've seen a few week willed crewmembers straight up starve to death and have decided there
               has got to be a better way.  And there is!
             </div>
             <div class="netScreed">Bugman Pawn & Loan has been a trusted fixture of the Nordic island community since 754BC.  With shops in nearly every port, our staff of 
               technical specialists will find a solution <span class="boldText">for you!</span>  Our services include:
             </div>
             <ul class="simpleList">
-              <li>Premium foresight</li>
-              <li>Runic condensation</li>
-              <li>No refunds</li>
+              <li>Indentured servitude</li>
+              <li>Ration trading (at market rates)</li>
+              <li>Best prices per oz for silver and gold</li>
             </ul>
             <div class="netScreed">At Bugman Pawn & Loan, we believe no one should have to die just because they suck balls at foraging (or have a half dozen 1HP 'friends' to support).
-                There are always sponsors will to milk the raw energy your body produces in exchange for gruel.</div>
+              There are always sponsors willing to milk the raw energy your body produces in exchange for gruel. Suffer no more! Inquire today.</div>
           </div>
       
           <div class="modalFooter">
@@ -202,7 +202,7 @@
               <img src="Half.png" alt="Half">
             </label>
 
-            <div class="settingsMidTitle">Day</div>
+            <div class="settingsMidTitle">&lt;--Day--&gt;</div>
       
             <label class="settingsTile" aria-label="Full Day">
               <input type="radio" name="day" value="full" checked>
@@ -288,17 +288,29 @@
             <div class="val" id="grossVal">0</div>
             <div class="lab">Net for the day:</div>
             <div class="val" id="netVal">0</div>
-            <button id="netInfoBtn" class="netInfoBtn" type="button" aria-label="Explain net result">*</button>
           </div>
         </div>
       </div>
 
+      <!-- Net action buttons (shown after forage run) -->
+      <div class="forageSpacer" id="netActionRow" hidden>
+        <button id="netPosBtn" class="imgBtnOracle" type="button" hidden>
+          <span class="btnLabel">Spend / Go Premium</span>
+          <span class="btnOracle" aria-live="polite"></span>
+        </button>
+      
+        <button id="netNegBtn" class="imgBtnOracle" type="button" hidden>
+          <span class="btnLabel">Need Help? Bugman</span>
+          <span class="btnOracle" aria-live="polite"></span>
+        </button>
+      </div>
 
       <!-- Monte Carlo chart + stats (card) -->
       <div class="sectionCard g4">
         <div class="sectionInner2">
 
           <div class="mcTitle">Monte Carlo Foraging Results</div>
+          <div style="text-align: center;">(20000 runs)</div>
           <canvas id="hist" width="800" height="320" aria-label="Net histogram"></canvas>
 
           <div class="stats" id="mcStats">
