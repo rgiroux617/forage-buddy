@@ -85,6 +85,24 @@ canvas {
   display: block;
 }
 
+/* simplelist test */
+.simpleList {
+  font-size: 18px;
+  margin: 0;          /* removes top & bottom spacing */
+  padding-left: 1.2em;
+}
+
+/* simplelist test */
+.simpleList2 {
+  font-size: 12px;
+  margin: 0;          /* removes top & bottom spacing */
+  padding-left: 1.2em;
+}
+
+/* paragraph spacer - homebrew */
+.pSpacer {
+  padding-top: 12px
+}
 
 /* ============================================================
    2b) Buttons system (primitives)
@@ -179,6 +197,14 @@ button {
   font-size: 18px;
   line-height: 1.35;
   text-align: center;
+  padding: 8px 6px;
+}
+
+/* for the rules */
+.rulezScreed {
+  font-size: 14px;
+  line-height: 1.35;
+  text-align: left;
   padding: 8px 6px;
 }
 
@@ -560,6 +586,43 @@ button {
   text-align: left;
 }
 
+/* ------------------------------------------------------------
+   Rulez Button
+   Notes:
+   - button is visually a PNG background
+   - inner text is screen-reader-only (hidden visually)
+   ------------------------------------------------------------ */
+#rulezBtn.imgBtn {
+  min-width: 95%;
+  height: 45px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  background-image: url("RulezButton.png?v=1");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+}
+
+/* Keep text for screen readers; hide visually */
+#rulezBtn.imgBtn .imgBtnText {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Press effect (optional) */
+#rulezBtn.imgBtn:active {
+  transform: translateY(1px);
+}
 
 /* ------------------------------------------------------------
    FORAGE IMAGE BUTTON
@@ -899,6 +962,10 @@ button {
   padding: 16px 16px 12px;
 }
 
+#rulezTitle {
+  font-size: 24px;
+  color:#b00020
+}
 
 /* Header row inside the dialog: title + close button */
 .modalHeader {

@@ -1017,6 +1017,14 @@ function makeRuneString(runes, n) {
 // Controllers (named event handlers)
 // ============================================================
 
+function onRulezClick() {
+  openModal(document.getElementById("rulezModal"));
+}
+
+function onRulezCloseClick() {
+  closeModal(document.getElementById("rulezModal"));
+}
+
 function onForageClick() {
   clearOutput();
   haptic(30);
@@ -1135,7 +1143,11 @@ function onNetNegBtnClick() {
 // ============================================================
 
 function wireUI() {
+  document.getElementById("rulezBtn").addEventListener("click", onRulezClick);
+  document.getElementById("rulezCloseBtn")?.addEventListener("click", onRulezCloseClick);
+  document.getElementById("rulezCloseBtn2")?.addEventListener("click", onRulezCloseClick);
   document.getElementById("forageBtn").addEventListener("click", onForageClick);
+
   document.getElementById("mcBtn").addEventListener("click", onMcClick);
 
   document.getElementById("editMembersBtn").addEventListener("click", onEditMembersClick);

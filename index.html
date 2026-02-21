@@ -18,6 +18,12 @@
         <img id="titleBlockImg" src="TitleBlock.png?v=3" alt="ForageBuddy">
       </div>
 
+      <!-- Forage Button -->
+      <div class="forageSpacer">
+        <button id="rulezBtn" class="imgBtn">
+          <span class="imgBtnText">Rulez</span>
+        </button>
+      </div>
 
       <!-- Members Section Card -->
       <div class="sectionCard g1">
@@ -40,6 +46,60 @@
           </table>
         </div>
       </div>
+
+      <div id="rulezModal" class="modal" aria-hidden="true">
+        <div class="bugmanModalCard">
+          <div class="modalHeader">
+            <div id="rulezTitle" class="modalTitle">Forage Rules</div>
+            <button id="rulezCloseBtn" class="iconBtn" type="button" aria-label="Close">✕</button>
+          </div>
+
+          <div class="modalBody">
+            <ul class="simpleList">
+              <li>1. Select/Edit your team.</li>
+              <li>2. Set the difficulty and forage time</li>
+              <li>3. Fuckin Forage! (press the button)</li>
+            </ul>
+            <br>
+            <div>Forage Buddy performs the rolls and shows the results for the group (actual rolls shown in gray below each name).
+            Rations and additional lost items or HP are also tallied.</div>
+            <br>
+            <div>A Monte Carlo simulation using 20000 runs of the same day
+            foraging is performed and shown in a histogram below with the gold bar representing how the current day's effort
+            compares.</div>
+            <br>
+            <div>Optionally, a lost item may be directly converted into -1 ration for greater detail in assessing foraging success.</div>
+            <br>
+            <div class="rulezScreed">
+              <div class="boldText">Difficulty</div>
+              <div>Easy = 2d6, Medium = 3d6, Hard = 4d6</div>
+              <div class="boldText">Success</div>
+              <div>Roll total must be &lt; CON (Snare gives +1 CON).</div>
+              <div class="boldText">Rations</div>
+              <div>Success - 1d4 rations (half-day halves).</div>
+              <div>Fail - roll1d6</div>
+                <ul class="simpleList2">
+                  <li>1,2: 0 rations</li>
+                  <li>3,4: 1d4 rations, -1 item</li>
+                  <li>5,6: 1d4 rations, -1HP</li>
+                </ul>
+            </div>
+            <br>
+            <div class="boldText pSpacer">Liking Forage Buddy?</div>
+            <div>Bugman Industries LLC. wants you to know we offer a wide array of adventuring solutions for your party at
+              reasonable
+              rates. The Bugman's "Buddy" line of apps is a must have when traveling the North Sea. Watch out for <i>Map Buddy</i>
+              and <i>Buddy Buddy</i>, coming soon!
+            </div>
+          </div>
+
+          <div class="modalFooter">
+            <button class="btn" type="button" id="rulezCloseBtn2">Close</button>
+          </div>
+        </div>
+      </div>
+
+      
 
       <!-- Members Editor Modal -->
       <div id="memberEditor" class="modal" aria-hidden="true">
@@ -134,46 +194,6 @@
         </div>
       </div>
 
-
-      <!-- Task Difficulty + Day (combined card)
-      <div class="sectionCard g2">
-        <div class="sectionInner2">
-
-          <div class="sectionTitle">Difficulty</div>
-
-          <div class="settingsRow settingsRow3" aria-label="Task Difficulty">
-            <label class="settingsTile" aria-label="Easy difficulty">
-              <input type="radio" name="difficulty" value="easy">
-              <img src="Easy.png" alt="Easy">
-            </label>
-
-            <label class="settingsTile" aria-label="Medium difficulty">
-              <input type="radio" name="difficulty" value="medium" checked>
-              <img src="Medium.png" alt="Medium">
-            </label>
-
-            <label class="settingsTile" aria-label="Hard difficulty">
-              <input type="radio" name="difficulty" value="hard">
-              <img src="Hard.png" alt="Hard">
-            </label>
-          </div>
-
-          <div class="sectionTitle">Day</div>
-          
-          <div class="settingsRow settingsRow2" aria-label="Time Spent">
-            <label class="settingsTile" aria-label="Half Day">
-              <input type="radio" name="day" value="half">
-              <img src="Half.png" alt="Half">
-            </label>
-
-            <label class="settingsTile" aria-label="Full Day">
-              <input type="radio" name="day" value="full" checked>
-              <img src="Full.png" alt="Full">
-            </label>
-          </div>
-        </div>
-      </div> -->
-
       <!-- Task Difficulty + Day (combined card) -->
       <div class="sectionCard g2">
         <div class="sectionInner2">
@@ -217,19 +237,8 @@
         </div>
       </div>
 
-      <!-- set lost items equal to -1 ration for calculation purposes
-      <div class="sectionCard g3">
-        <div class="sectionInner">
-            <div class="calloutRow" title='If checked: "-1 item" becomes "-1 ration" (clamped at 0) for that forager.'>
-              <label for="itemAsRation">Optional: Set lost item as equal to -1 ration</label>
-              <input id="itemAsRation" type="checkbox">
-            </div>
-        </div>
-      </div> -->
 
-      
-    <!-- Monte Carlo (single button) -->
-    <!-- Oracle button (no card, forage-style) -->
+    <!-- Consult the Oracle Button -->
     <div class="forageSpacer">
       <button id="mcBtn" class="imgBtnOracle" type="button">
         <span class="btnLabel">Consult the Oracle</span>
@@ -241,7 +250,7 @@
     <input id="mcRuns" type="number" min="100" step="100" value="20000" hidden>
 
 
-      <!-- Forage button (no card, but spaced) -->
+      <!-- Forage Button -->
       <div class="forageSpacer">
         <button id="forageBtn" class="imgBtn">
           <span class="imgBtnText">Just Fuckin Forage!</span>
