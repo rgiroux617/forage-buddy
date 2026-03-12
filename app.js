@@ -17,6 +17,8 @@ let party = [
   { name: "Knud",     con:  8 },
 ];
 
+let forageHasRun = false;
+
 // Optional: pre-check some members (by name)
 let defaultSelected = new Set(["Ingvar","Hackon the Maimed","Lambort","Rabiésman"]);
 
@@ -190,29 +192,27 @@ function getSelectedTeam() {
 }
 
 function updateNetActionButtons() {
-  const net = Number(document.getElementById("netVal")?.textContent ?? NaN);
-
   const row = document.getElementById("netActionRow");
-  const posBtn = document.getElementById("netPosBtn");
-  const negBtn = document.getElementById("netNegBtn");
-  if (!row || !posBtn || !negBtn) return;
+  if (!row) return;
 
-  // Before a forage run (or invalid net): hide everything
-  if (!Number.isFinite(net)) {
+  const posSlot = row.querySelector('[data-ad="oracle-premium"]');
+  const negSlot = row.querySelector('[data-ad="bugman-pawn-loan"]');
+
+  if (!forageHasRun) {
     row.hidden = true;
-    posBtn.hidden = true;
-    negBtn.hidden = true;
     return;
   }
 
-  // After a forage run: show row and only the correct button
+  const net = Number(document.getElementById("netVal")?.textContent ?? 0);
+
   row.hidden = false;
+
   if (net >= 0) {
-    posBtn.hidden = false;
-    negBtn.hidden = true;
+    posSlot.hidden = false;
+    negSlot.hidden = true;
   } else {
-    posBtn.hidden = true;
-    negBtn.hidden = false;
+    posSlot.hidden = true;
+    negSlot.hidden = false;
   }
 }
 
@@ -1039,6 +1039,7 @@ function onForageClick() {
   document.getElementById("grossVal").textContent = String(gross);
   document.getElementById("netVal").textContent = String(net);
 
+  forageHasRun = true;
   updateNetActionButtons();
 
 
@@ -1155,11 +1156,6 @@ function wireUI() {
   document.getElementById("cancelEditorBtn").addEventListener("click", onCancelEditorClick);
   document.getElementById("applyEditorBtn").addEventListener("click", onApplyEditorClick);
 
-  document.getElementById("netPosBtn")?.addEventListener("click", onNetPosBtnClick);
-  document.getElementById("netNegBtn")?.addEventListener("click", onNetNegBtnClick);
-
-
-
   memberEditor.addEventListener("click", onEditorBackdropClick);
 
   // Any settings change resets the "misuse" trigger
@@ -1209,5 +1205,6 @@ function wireUI() {
 
 renderMembersTable();
 wireUI();
+updateNetActionButtons();
 
 

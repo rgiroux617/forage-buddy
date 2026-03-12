@@ -8,6 +8,9 @@
   <link rel="apple-touch-icon" href="iphoneIcon.png">
   <title>FORAGE BUDDY ©2026 Bugman Industries LLC</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- <link rel="stylesheet" href="../BugmanAds/ads.css"> -->
+  <!-- toggle for github use -->
+  <link rel="stylesheet" href="https://username.github.io/bugman-ads/ads.css">
 </head>
 
 <body>
@@ -134,66 +137,6 @@
         </div>
       </div>
 
-      <!-- Net Result: POSITIVE Modal -->
-      <div id="netModalPos" class="modal" aria-hidden="true">
-        <div class="bugmanModalCard" role="dialog" aria-modal="true" aria-label="Net result details (positive)">
-          <!-- <div class="modalHeader"> -->
-            <div>Available now - </div>
-            <div class="modalTitle2">Oracle Premium Services</div>
-            <button class="iconBtn netModalClose" type="button" aria-label="Close">✕</button>
-          <!-- </div> -->
-      
-          <div class="bugmanModalBody">
-            <div class="netScreed">
-              Sitting pretty with extra rations?  Why let them spoil when you can invest in what one Viking daily referred to as
-              <span class="italicText">"the top foraging consultation service in the greater island area."</span> That's right, <span class="boldText greenText">Forage Buddy</span> and
-              <span class="boldText purpleText">Oracle Consulation</span> and 
-               are now available on a premium tier, offering unlimited consults.  Tired of catty responses from the Oracle? - Not any more!
-               With the Forage Buddy Premium, you'll be the envy of your clan.  Act now and receive a new app color just to show off
-                your great taste!
-            </div>
-            <div class="netScreed">For the low rate of just <span class="redText">1.5 rations per day</span> you can be living the good life.  Don't be the only Knud in your Karvi without it!</div>
-          </div>
-      
-          <div class="modalFooter netModalFooter2">
-            <button id="netAcceptBtn" class="btn" type="button">Go Premium!</button>
-            <button class="btn netModalClose" type="button">Close</button>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Net Result: NEGATIVE Modal -->
-      <div id="netModalNeg" class="modal" aria-hidden="true">
-        <div class="bugmanModalCard" role="dialog" aria-modal="true" aria-label="Net result details (negative)">
-          <!-- <div class="modalHeader"> -->
-            <div class="modalTitle2">Bugman Pawn & Loan</div>
-            <button class="iconBtn netModalClose" type="button" aria-label="Close">✕</button>
-          <!-- </div> -->
-      
-          <div class="bugmanModalBody">
-            <div class="netScreed">
-              <!-- placeholder text for now -->
-              Is foraging no longer cutting it?  Maybe you've seen a few week willed crewmembers straight up starve to death and have decided there
-              has got to be a better way.  And there is!
-            </div>
-            <div class="netScreed">Bugman Pawn & Loan has been a trusted fixture of the Nordic island community since 754BC.  With shops in nearly every port, our staff of 
-              technical specialists will find a solution <span class="boldText">for you!</span>  Our services include:
-            </div>
-            <ul class="simpleList">
-              <li>Indentured servitude</li>
-              <li>Ration trading (at market rates)</li>
-              <li>Best prices per oz for silver and gold</li>
-            </ul>
-            <div class="netScreed">At Bugman Pawn & Loan, we believe no one should have to die just because they suck balls at foraging (or have a half dozen 1HP 'friends' to support).
-              There are always sponsors willing to milk the raw energy your body produces in exchange for gruel. Suffer no more! Inquire today.</div>
-          </div>
-      
-          <div class="modalFooter">
-            <button class="btn netModalClose" type="button">Close</button>
-          </div>
-        </div>
-      </div>
-
       <!-- Task Difficulty + Day (combined card) -->
       <div class="sectionCard g2">
         <div class="sectionInner2">
@@ -222,7 +165,7 @@
               <img src="Half.png" alt="Half">
             </label>
 
-            <div class="settingsMidTitle">&lt;--Day--&gt;</div>
+            <div class="settingsMidTitle">&lt;-Day-&gt;</div>
       
             <label class="settingsTile" aria-label="Full Day">
               <input type="radio" name="day" value="full" checked>
@@ -303,15 +246,11 @@
 
       <!-- Net action buttons (shown after forage run) -->
       <div class="forageSpacer" id="netActionRow" hidden>
-        <button id="netPosBtn" class="imgBtnOracle" type="button" hidden>
-          <span class="btnLabel">Spend / Go Premium</span>
-          <span class="btnOracle" aria-live="polite"></span>
-        </button>
-      
-        <button id="netNegBtn" class="imgBtnOracle" type="button" hidden>
-          <span class="btnLabel">Need Help? Bugman</span>
-          <span class="btnOracle" aria-live="polite"></span>
-        </button>
+
+        <div class="ad-slot" data-ad="oracle-premium" hidden></div>
+
+        <div class="ad-slot" data-ad="bugman-pawn-loan" hidden></div>
+
       </div>
 
       <!-- Monte Carlo chart + stats (card) -->
@@ -341,7 +280,28 @@
       </div>
     </div>
   </div>
+
+  <!-- Shared Ad Modal -->
+  
+  <div id="adModal" class="ad-modal hidden">
+  
+    <div id="adCard" class="ad-card">
+  
+      <div id="adKicker" class="ad-kicker"></div>
+  
+      <h2 id="adTitle"></h2>
+  
+      <div id="adBody"></div>
+  
+      <div id="adFooter"></div>
+  
+    </div>
+  
+  </div>
   <audio id="cashSound" src="CashRegister.mp3" preload="auto"></audio>
-<script src="app.js" defer></script>
+<script src="app.js"></script>
+<!-- <script type="module" src="../BugmanAds/ad-engine.js"></script> -->
+<!-- toggle for github use -->
+<script type="module" src="https://username.github.io/bugman-ads/ad-engine.js"></script>
 </body>
 </html>
